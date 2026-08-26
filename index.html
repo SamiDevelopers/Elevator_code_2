@@ -17,9 +17,6 @@
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .sync-status {
-            transition: all 0.3s ease;
-        }
         .spinner {
             border: 2px solid #f3f3f3;
             border-top: 2px solid #3498db;
@@ -45,8 +42,8 @@
             </div>
             <div class="flex flex-col sm:flex-row items-center gap-3">
                 <div id="syncStatus" class="flex items-center gap-2 bg-blue-700/50 px-3 py-1.5 rounded-lg text-sm">
-                    <span id="syncIcon">🔄</span>
-                    <span id="syncText">جاري المزامنة...</span>
+                    <span id="syncIcon">💾</span>
+                    <span id="syncText">محلي فقط</span>
                 </div>
                 <button onclick="openAptModal()" class="bg-green-500 hover:bg-green-600 font-semibold px-5 py-2.5 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm">
                     <span>➕ إضافة شقة / ساكن جديد</span>
@@ -209,12 +206,12 @@
             { id: "0", floor: "البدروم", position: "-", name: "أ - فرج ميخائيل", usesElevator: false, fobs: [] },
             { id: "101", floor: "الأول", position: "يمين السلم", name: "أ - عبد المجيد سلطان", usesElevator: false, fobs: [] },
             { id: "102", floor: "الأول", position: "يسار السلم", name: "أ - رضا وهيب", usesElevator: false, fobs: [] },
-            { id: "201", floor: "الثانى", position: "يمين السلم", name: "أ - ماجد محمد سامي", usesElevator: false, fobs: [] },
-            { id: "202", floor: "الثانى", position: "يسار السلم", name: "أ - ميلاد", usesElevator: false, fobs: [] },
-            { id: "301", floor: "الثالث", position: "يمين السلم", name: "أ- nاصر الجابري", usesElevator: true, fobs: [{ code: "0003718769", active: true }, { code: "0004241743", active: true }, { code: "0003813056", active: true }, { code: "0003896078", active: true }, { code: "0003887737", active: true }] },
+            { id: "201", floor: "الثاني", position: "يمين السلم", name: "أ - ماجد محمد سامي", usesElevator: false, fobs: [] },
+            { id: "202", floor: "الثاني", position: "يسار السلم", name: "أ - ميلاد", usesElevator: false, fobs: [] },
+            { id: "301", floor: "الثالث", position: "يمين السلم", name: "أ- ناصر الجابري", usesElevator: true, fobs: [{ code: "0003718769", active: true }, { code: "0004241743", active: true }, { code: "0003813056", active: true }, { code: "0003896078", active: true }, { code: "0003887737", active: true }] },
             { id: "302", floor: "الثالث", position: "يسار السلم", name: "أ / مرتضي", usesElevator: true, fobs: [{ code: "0003883215", active: true }, { code: "0013808119", active: true }] },
             { id: "401", floor: "الرابع", position: "يمين السلم", name: "أ - فادي سمير", usesElevator: true, fobs: [{ code: "0013630411", active: true }, { code: "0013543250", active: true }, { code: "0001112644", active: true }, { code: "0000242148", active: true }, { code: "0000426301", active: true }] },
-            { id: "402", floor: "الرابع", position: "يسار السلم", name: "د. منتصر أحمد على", usesElevator: true, fobs: [{ code: "0013594203", active: true }, { code: "0013623543", active: true }, { code: "0000674223", active: true }, { code: "0001184484", active: true }, { code: "00038926669", active: true }] },
+            { id: "402", floor: "الرابع", position: "يسار السلم", name: "د. منتصر أحمد علي", usesElevator: true, fobs: [{ code: "0013594203", active: true }, { code: "0013623543", active: true }, { code: "0000674223", active: true }, { code: "0001184484", active: true }, { code: "00038926669", active: true }] },
             { id: "501", floor: "الخامس", position: "يمين السلم", name: "أ - عاطف رزق", usesElevator: true, fobs: [{ code: "0013573156", active: true }] },
             { id: "502", floor: "الخامس", position: "يسار السلم", name: "الحاج محمد عبد المنعم", usesElevator: true, fobs: [{ code: "0013620969", active: true }, { code: "0000998632", active: true }, { code: "0000936692", active: true }, { code: "0013567037", active: true }] },
             { id: "601", floor: "السادس", position: "يمين السلم", name: "أ - فادي راشد", usesElevator: true, fobs: [{ code: "0013629835", active: true }, { code: "0013596113", active: true }] },
@@ -222,15 +219,15 @@
             { id: "701", floor: "السابع", position: "يمين السلم", name: "أ - محمد محسن", usesElevator: true, fobs: [{ code: "0000937473", active: true }, { code: "0000956467", active: true }, { code: "0004220241", active: true }, { code: "0003881684", active: true }, { code: "0013145196", active: true }, { code: "0013765574", active: true }, { code: "0003963663", active: true }] },
             { id: "702", floor: "السابع", position: "يسار السلم", name: "أ - خالد جمال", usesElevator: true, fobs: [{ code: "0013815319", active: true }, { code: "0013795969", active: true }, { code: "0013820196", active: true }, { code: "0007069509", active: true }] },
             { id: "801", floor: "الثامن", position: "يمين السلم", name: "أ - محمد السيد", usesElevator: true, fobs: [{ code: "0013660068", active: true }, { code: "0013587154", active: true }, { code: "0001086584", active: true }, { code: "0001081956", active: true }, { code: "0012604425", active: true }, { code: "0012558520", active: true }, { code: "0006433908", active: true }] },
-            { id: "802", floor: "الثامن", position: "يسار السلم", name: "أ - عبد المعطى", usesElevator: false, fobs: [] },
+            { id: "802", floor: "الثامن", position: "يسار السلم", name: "أ - عبد المعطي", usesElevator: false, fobs: [] },
             { id: "901", floor: "التاسع", position: "يمين السلم", name: "أ - جمعة", usesElevator: false, fobs: [] },
             { id: "902", floor: "التاسع", position: "يسار السلم", name: "أ - سلامة ماضي", usesElevator: true, fobs: [{ code: "0000959304", active: true }, { code: "0000978230", active: true }] },
-            { id: "1001", floor: "العاشر", position: "يمين السلم", name: "أ - احمد سعيد", usesElevator: true, fobs: [{ code: "0013598142", active: true }, { code: "0013655203", active: true }, { code: "0013577035", active: true }, { code: "0000955089", active: true }] },
+            { id: "1001", floor: "العاشر", position: "يمين السلم", name: "أ - أحمد سعيد", usesElevator: true, fobs: [{ code: "0013598142", active: true }, { code: "0013655203", active: true }, { code: "0013577035", active: true }, { code: "0000955089", active: true }] },
             { id: "1002", floor: "العاشر", position: "يسار السلم", name: "أ - عاطف عبد العزيز", usesElevator: true, fobs: [{ code: "0013558246", active: true }, { code: "0013535294", active: true }, { code: "0003922290", active: true }] },
-            { id: "1101", floor: "الحادى عشر", position: "يمين السلم", name: "م . ماجدة حبيب", usesElevator: true, fobs: [{ code: "0013621386", active: true }] },
-            { id: "1102", floor: "الحادى عشر", position: "يسار السلم", name: "ورثة م . غادة - رانيا رمزي", usesElevator: true, fobs: [{ code: "0013658022", active: true }, { code: "0013663583", active: true }] },
-            { id: "1201", floor: "الثانى عشر", position: "يمين السلم", name: "أ - مشيل انطونيوس", usesElevator: true, fobs: [{ code: "0013647677", active: true }, { code: "0013517167", active: true }, { code: "0003878575", active: true }] },
-            { id: "1202", floor: "الثانى عشر", position: "يسار السلم", name: "أ - محمد جمال احمد", usesElevator: true, fobs: [{ code: "0013549294", active: true }, { code: "0013644461", active: true }, { code: "0000971992", active: true }] },
+            { id: "1101", floor: "الحادي عشر", position: "يمين السلم", name: "م . ماجدة حبيب", usesElevator: true, fobs: [{ code: "0013621386", active: true }] },
+            { id: "1102", floor: "الحادي عشر", position: "يسار السلم", name: "ورثة م . غادة - رانيا رمزي", usesElevator: true, fobs: [{ code: "0013658022", active: true }, { code: "0013663583", active: true }] },
+            { id: "1201", floor: "الثاني عشر", position: "يمين السلم", name: "أ - مشيل انطونيوس", usesElevator: true, fobs: [{ code: "0013647677", active: true }, { code: "0013517167", active: true }, { code: "0003878575", active: true }] },
+            { id: "1202", floor: "الثاني عشر", position: "يسار السلم", name: "أ - محمد جمال أحمد", usesElevator: true, fobs: [{ code: "0013549294", active: true }, { code: "0013644461", active: true }, { code: "0000971992", active: true }] },
             { id: "1301", floor: "الثالث عشر", position: "يمين السلم", name: "م . جورجيت حبيب", usesElevator: true, fobs: [{ code: "0000986709", active: true }, { code: "0013621358", active: true }] },
             { id: "1302", floor: "الثالث عشر", position: "يسار السلم", name: "د. سامي عادل", usesElevator: true, fobs: [{ code: "0013519579", active: true }, { code: "001367684", active: true }] }
         ];
@@ -259,6 +256,22 @@
             syncWithGitHub();
         }
 
+        // دالة لفك تشفير Base64 بشكل صحيح مع دعم اللغة العربية
+        function decodeBase64(encoded) {
+            try {
+                // فك التشفير باستخدام atob ثم تحويل إلى UTF-8
+                const binaryString = atob(encoded);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                return new TextDecoder('utf-8').decode(bytes);
+            } catch (e) {
+                console.error('خطأ في فك التشفير:', e);
+                return '';
+            }
+        }
+
         async function syncWithGitHub() {
             if (!githubConfig.repoUrl || !githubConfig.token) {
                 showToast('⚠️ يرجى حفظ إعدادات GitHub أولاً');
@@ -270,7 +283,6 @@
             updateSyncStatus('جاري التحميل...', '🔄');
 
             try {
-                // محاولة جلب البيانات من GitHub
                 const response = await fetch(githubConfig.repoUrl, {
                     headers: {
                         'Authorization': `token ${githubConfig.token}`,
@@ -280,22 +292,29 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    const content = atob(data.content);
-                    const githubData = JSON.parse(content);
                     
-                    // مقارنة البيانات وتحديثها
-                    const localData = JSON.parse(localStorage.getItem('maryam_tower_residents') || 'null');
+                    // فك تشفير المحتوى بشكل صحيح مع دعم العربية
+                    const decodedContent = decodeBase64(data.content);
                     
-                    if (JSON.stringify(githubData) !== JSON.stringify(localData)) {
-                        residents = githubData;
-                        localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
-                        renderTable();
-                        updateCounters();
-                        showToast('✅ تم المزامنة مع GitHub بنجاح');
-                        updateSyncStatus('متزامن', '✅');
-                    } else {
-                        showToast('ℹ️ البيانات متطابقة مع GitHub');
-                        updateSyncStatus('متزامن', '✅');
+                    try {
+                        const githubData = JSON.parse(decodedContent);
+                        
+                        // التحقق من صحة البيانات
+                        if (Array.isArray(githubData) && githubData.length > 0) {
+                            residents = githubData;
+                            localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+                            renderTable();
+                            updateCounters();
+                            showToast('✅ تم المزامنة مع GitHub بنجاح');
+                            updateSyncStatus('متزامن', '✅');
+                        } else {
+                            throw new Error('بيانات غير صالحة');
+                        }
+                    } catch (parseError) {
+                        console.error('خطأ في تحليل JSON:', parseError);
+                        showToast('⚠️ خطأ في تنسيق البيانات من GitHub');
+                        updateSyncStatus('خطأ', '❌');
+                        loadLocalData();
                     }
                 } else if (response.status === 404) {
                     // الملف غير موجود، نقوم بإنشائه
@@ -307,8 +326,6 @@
                 console.error('Sync error:', error);
                 showToast('⚠️ فشل المزامنة، سيتم استخدام البيانات المحلية');
                 updateSyncStatus('غير متزامن', '⚠️');
-                
-                // تحميل البيانات المحلية
                 loadLocalData();
             } finally {
                 isSyncing = false;
@@ -316,11 +333,36 @@
         }
 
         async function uploadToGitHub() {
-            if (!githubConfig.repoUrl || !githubConfig.token) return;
+            if (!githubConfig.repoUrl || !githubConfig.token) {
+                showToast('⚠️ إعدادات GitHub غير مكتملة');
+                return;
+            }
 
             try {
+                // التأكد من أن البيانات صالحة
+                if (!Array.isArray(residents) || residents.length === 0) {
+                    showToast('⚠️ لا توجد بيانات للرفع');
+                    return;
+                }
+
                 const data = JSON.stringify(residents, null, 2);
-                const encodedData = btoa(unescape(encodeURIComponent(data)));
+                
+                // تشفير البيانات إلى Base64 مع دعم UTF-8
+                const encoder = new TextEncoder();
+                const dataBytes = encoder.encode(data);
+                const binaryString = Array.from(dataBytes).map(byte => String.fromCharCode(byte)).join('');
+                const encodedData = btoa(binaryString);
+
+                const sha = await getFileSha();
+                const body = {
+                    message: 'تحديث بيانات الأسانسير - ' + new Date().toLocaleString('ar-EG'),
+                    content: encodedData,
+                    branch: 'main'
+                };
+
+                if (sha) {
+                    body.sha = sha;
+                }
 
                 const response = await fetch(githubConfig.repoUrl, {
                     method: 'PUT',
@@ -329,22 +371,21 @@
                         'Content-Type': 'application/json',
                         'Accept': 'application/vnd.github.v3+json'
                     },
-                    body: JSON.stringify({
-                        message: 'تحديث بيانات الأسانسير',
-                        content: encodedData,
-                        sha: await getFileSha()
-                    })
+                    body: JSON.stringify(body)
                 });
 
                 if (response.ok) {
                     showToast('✅ تم رفع البيانات إلى GitHub بنجاح');
                     updateSyncStatus('متزامن', '✅');
                 } else {
-                    throw new Error('فشل رفع البيانات');
+                    const errorData = await response.json();
+                    console.error('GitHub Upload Error:', errorData);
+                    throw new Error(`فشل رفع البيانات: ${response.status}`);
                 }
             } catch (error) {
                 console.error('Upload error:', error);
-                showToast('⚠️ فشل رفع البيانات إلى GitHub');
+                showToast(`⚠️ فشل رفع البيانات: ${error.message}`);
+                updateSyncStatus('خطأ في الرفع', '❌');
             }
         }
 
@@ -377,11 +418,15 @@
             if (stored) {
                 try {
                     residents = JSON.parse(stored);
+                    if (!Array.isArray(residents) || residents.length === 0) {
+                        throw new Error('بيانات فارغة');
+                    }
                 } catch {
-                    residents = initialResidents;
+                    residents = JSON.parse(JSON.stringify(initialResidents));
+                    localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
                 }
             } else {
-                residents = initialResidents;
+                residents = JSON.parse(JSON.stringify(initialResidents));
                 localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
             }
             renderTable();
@@ -389,12 +434,17 @@
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
-            updateCounters();
-            
-            // محاولة المزامنة التلقائية مع GitHub
-            if (githubConfig.repoUrl && githubConfig.token) {
-                uploadToGitHub();
+            try {
+                localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+                updateCounters();
+                
+                // محاولة المزامنة التلقائية مع GitHub
+                if (githubConfig.repoUrl && githubConfig.token) {
+                    setTimeout(uploadToGitHub, 500);
+                }
+            } catch (error) {
+                console.error('خطأ في حفظ البيانات:', error);
+                showToast('⚠️ خطأ في حفظ البيانات المحلية');
             }
         }
 
@@ -418,8 +468,21 @@
             const tbody = document.getElementById('residentsTableBody');
             tbody.innerHTML = '';
 
+            if (!Array.isArray(dataToRender) || dataToRender.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-8 text-slate-400">
+                            <span class="text-2xl">📭</span>
+                            <p class="mt-2">لا توجد بيانات لعرضها</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
             dataToRender.forEach((res, index) => {
                 const originalIndex = residents.findIndex(r => r.id === res.id);
+                if (originalIndex === -1) return;
                 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 border-b border-slate-100 transition duration-150";
@@ -443,11 +506,11 @@
                 tr.innerHTML = `
                     <td class="py-4 px-4 text-center font-bold text-slate-400">${index + 1}</td>
                     <td class="py-4 px-4">
-                        <div class="font-bold text-slate-700">${res.floor}</div>
-                        <div class="text-slate-400 text-xs">${res.position}</div>
+                        <div class="font-bold text-slate-700">${res.floor || '-'}</div>
+                        <div class="text-slate-400 text-xs">${res.position || '-'}</div>
                     </td>
-                    <td class="py-4 px-4 font-mono font-bold text-blue-600">${res.id}</td>
-                    <td class="py-4 px-4 font-semibold text-slate-800">${res.name}</td>
+                    <td class="py-4 px-4 font-mono font-bold text-blue-600">${res.id || '-'}</td>
+                    <td class="py-4 px-4 font-semibold text-slate-800">${res.name || '-'}</td>
                     <td class="py-4 px-4 text-center">
                         <button onclick="toggleElevatorUsage(${originalIndex})" class="cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full transition duration-150 ${res.usesElevator ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
                             ${res.usesElevator ? '🛗 مستخدم' : '❌ غير مستخدم'}
@@ -455,7 +518,7 @@
                     </td>
                     <td class="py-4 px-4 max-w-xs sm:max-w-md">${fobsHtml}</td>
                     <td class="py-4 px-4 text-center">
-                        <div class="flex items-center justify-center gap-2">
+                        <div class="flex items-center justify-center gap-2 flex-wrap">
                             ${res.usesElevator ? `<button onclick="openFobModal(${originalIndex})" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded transition">🔑 الشفرات</button>` : ''}
                             <button onclick="openAptModal(${originalIndex})" class="border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs px-2.5 py-1.5 rounded transition">⚙️ تعديل</button>
                             <button onclick="deleteResident(${originalIndex})" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded transition">🗑️ حذف</button>
@@ -510,19 +573,20 @@
             const modal = document.getElementById('aptModal');
             document.getElementById('aptForm').reset();
             
-            if(index !== null) {
+            if(index !== null && residents[index]) {
                 document.getElementById('modalTitle').innerText = "⚙️ تعديل بيانات الشقة";
                 document.getElementById('editAptIndex').value = index;
                 document.getElementById('aptId').value = residents[index].id;
                 document.getElementById('aptId').disabled = true;
-                document.getElementById('aptFloor').value = residents[index].floor;
-                document.getElementById('aptPosition').value = residents[index].position;
-                document.getElementById('aptResident').value = residents[index].name;
+                document.getElementById('aptFloor').value = residents[index].floor || '';
+                document.getElementById('aptPosition').value = residents[index].position || '';
+                document.getElementById('aptResident').value = residents[index].name || '';
                 document.getElementById('aptElevatorUsage').value = residents[index].usesElevator.toString();
             } else {
                 document.getElementById('modalTitle').innerText = "➕ إضافة شقة / ساكن جديد";
                 document.getElementById('editAptIndex').value = "";
                 document.getElementById('aptId').disabled = false;
+                document.getElementById('aptElevatorUsage').value = "true";
             }
             
             modal.classList.remove('hidden');
@@ -544,6 +608,11 @@
             const name = document.getElementById('aptResident').value.trim();
             const usesElevator = document.getElementById('aptElevatorUsage').value === "true";
 
+            if (!id || !floor || !name) {
+                alert('⚠️ يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+
             if (index === "") {
                 if(residents.some(r => r.id === id)) {
                     alert("⚠️ رقم هذه الشقة موجود مسبقاً بالنظام!");
@@ -552,11 +621,14 @@
                 residents.push({ id, floor, position, name, usesElevator, fobs: [] });
                 showToast(`✅ تم إضافة الشقة ${id} بنجاح`);
             } else {
-                residents[index].floor = floor;
-                residents[index].position = position;
-                residents[index].name = name;
-                residents[index].usesElevator = usesElevator;
-                showToast(`✅ تم تحديث بيانات الشقة ${id} بنجاح`);
+                const idx = parseInt(index);
+                if (residents[idx]) {
+                    residents[idx].floor = floor;
+                    residents[idx].position = position;
+                    residents[idx].name = name;
+                    residents[idx].usesElevator = usesElevator;
+                    showToast(`✅ تم تحديث بيانات الشقة ${id} بنجاح`);
+                }
             }
 
             saveToLocalStorage();
@@ -566,6 +638,11 @@
 
         // ==================== دوال مودال الشفرات ====================
         function openFobModal(index) {
+            if (!residents[index]) {
+                showToast('⚠️ بيانات الشقة غير موجودة');
+                return;
+            }
+            
             activeFobAptIndex = index;
             const res = residents[index];
             const modal = document.getElementById('fobModal');
@@ -589,8 +666,14 @@
         function renderFobsList() {
             const container = document.getElementById('fobsListContainer');
             const badge = document.getElementById('fobsCountBadge');
-            const res = residents[activeFobAptIndex];
             
+            if (activeFobAptIndex === null || !residents[activeFobAptIndex]) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6 italic">خطأ في تحميل البيانات</p>`;
+                badge.innerText = '0 شفرة';
+                return;
+            }
+            
+            const res = residents[activeFobAptIndex];
             container.innerHTML = '';
             badge.innerText = `${res.fobs.length} شفرة`;
 
@@ -626,6 +709,11 @@
         }
 
         function addNewFob() {
+            if (activeFobAptIndex === null || !residents[activeFobAptIndex]) {
+                showToast('⚠️ خطأ: لم يتم اختيار شقة');
+                return;
+            }
+
             const codeInput = document.getElementById('newFobCode');
             const code = codeInput.value.trim();
             
@@ -654,6 +742,8 @@
         }
 
         function toggleFobStatus(fIndex) {
+            if (activeFobAptIndex === null || !residents[activeFobAptIndex]) return;
+            
             residents[activeFobAptIndex].fobs[fIndex].active = !residents[activeFobAptIndex].fobs[fIndex].active;
             saveToLocalStorage();
             renderFobsList();
@@ -663,6 +753,8 @@
         }
 
         function editFobCode(fIndex) {
+            if (activeFobAptIndex === null || !residents[activeFobAptIndex]) return;
+            
             const oldCode = residents[activeFobAptIndex].fobs[fIndex].code;
             const newCode = prompt("✏️ قم بتعديل كود الشفرة المكتوب:", oldCode);
             
@@ -687,6 +779,8 @@
         }
 
         function deleteFob(fIndex) {
+            if (activeFobAptIndex === null || !residents[activeFobAptIndex]) return;
+            
             if(confirm("🚨 هل أنت متأكد من حذف هذه الشفرة نهائياً؟")) {
                 const code = residents[activeFobAptIndex].fobs[fIndex].code;
                 residents[activeFobAptIndex].fobs.splice(fIndex, 1);
@@ -732,7 +826,7 @@
             } else {
                 updateSyncStatus('محلي فقط', '💾');
             }
-        }
+        };
     </script>
 </body>
 </html>
