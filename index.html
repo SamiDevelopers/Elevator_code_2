@@ -17,6 +17,22 @@
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .sync-status {
+            transition: all 0.3s ease;
+        }
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
@@ -27,14 +43,43 @@
                 <h1 class="text-2xl font-bold">🏢 نظام إدارة شفرات أسانسير برج مريم</h1>
                 <p class="text-blue-100 text-sm mt-1">نظام محاسبي ذكي لإدارة شفرات السكان وحالات الاستخدام</p>
             </div>
-            <button onclick="openAptModal()" class="bg-green-500 hover:bg-green-600 font-semibold px-5 py-2.5 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm">
-                <span>➕ إضافة شقة / ساكن جديد</span>
-            </button>
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <div id="syncStatus" class="flex items-center gap-2 bg-blue-700/50 px-3 py-1.5 rounded-lg text-sm">
+                    <span id="syncIcon">🔄</span>
+                    <span id="syncText">جاري المزامنة...</span>
+                </div>
+                <button onclick="openAptModal()" class="bg-green-500 hover:bg-green-600 font-semibold px-5 py-2.5 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm">
+                    <span>➕ إضافة شقة / ساكن جديد</span>
+                </button>
+            </div>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 pb-24">
         
+        <!-- إعدادات GitHub -->
+        <div class="bg-white rounded-xl shadow-md border border-slate-200 p-4 mb-6">
+            <div class="flex flex-col md:flex-row items-center gap-4">
+                <div class="flex-1 w-full">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🔗 رابط مستودع GitHub (للمزامنة)</label>
+                    <input type="url" id="repoUrl" placeholder="مثال: https://api.github.com/repos/username/repo/contents/data.json" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex-1 w-full">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🔑 رمز التوثيق (GitHub Token)</label>
+                    <input type="password" id="githubToken" placeholder="أدخل GitHub Personal Access Token" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex gap-2 mt-2 md:mt-6">
+                    <button onclick="saveGitHubSettings()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition whitespace-nowrap">💾 حفظ الإعدادات</button>
+                    <button onclick="syncWithGitHub()" class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition whitespace-nowrap">🔄 مزامنة الآن</button>
+                </div>
+            </div>
+            <div class="mt-2 text-xs text-slate-500">
+                <span>💡 ملاحظة: سيتم حفظ الإعدادات في المتصفح. للحصول على Token: </span>
+                <a href="https://github.com/settings/tokens" target="_blank" class="text-blue-600 hover:underline">أنشئ Token هنا</a>
+                <span class="mr-2">(صلاحيات: repo)</span>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
             <div class="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
                 <input type="text" id="searchInput" oninput="filterResidents()" placeholder="🔍 ابحث برقم الشقة أو اسم الساكن..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
@@ -152,7 +197,13 @@
     </div>
 
     <script>
-        // 1. قاعدة البيانات الأولية المضمنة بالكامل حسب تزويدك للبيانات
+        // ==================== إعدادات GitHub ====================
+        let githubConfig = {
+            repoUrl: localStorage.getItem('github_repo_url') || '',
+            token: localStorage.getItem('github_token') || ''
+        };
+
+        // ==================== قاعدة البيانات ====================
         const initialResidents = [
             { id: "البواب", floor: "الأرضي", position: "-", name: "البواب", usesElevator: true, fobs: [{ code: "0013643565", active: true }] },
             { id: "0", floor: "البدروم", position: "-", name: "أ - فرج ميخائيل", usesElevator: false, fobs: [] },
@@ -184,17 +235,170 @@
             { id: "1302", floor: "الثالث عشر", position: "يسار السلم", name: "د. سامي عادل", usesElevator: true, fobs: [{ code: "0013519579", active: true }, { code: "001367684", active: true }] }
         ];
 
-        // تهيئة المتغيرات الكلية وقراءة البيانات من LocalStorage
-        let residents = JSON.parse(localStorage.getItem('maryam_tower_residents')) || initialResidents;
+        let residents = [];
         let activeFobAptIndex = null;
+        let isSyncing = false;
 
-        // دالة الحفظ في التخزين المحلي للمتصفح (LocalStorage)
-        function saveToLocalStorage() {
-            localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+        // ==================== دوال المزامنة مع GitHub ====================
+        function saveGitHubSettings() {
+            const repoUrl = document.getElementById('repoUrl').value.trim();
+            const token = document.getElementById('githubToken').value.trim();
+            
+            if (!repoUrl || !token) {
+                alert('⚠️ يرجى إدخال رابط المستودع ورمز التوثيق');
+                return;
+            }
+
+            githubConfig.repoUrl = repoUrl;
+            githubConfig.token = token;
+            
+            localStorage.setItem('github_repo_url', repoUrl);
+            localStorage.setItem('github_token', token);
+            
+            showToast('✅ تم حفظ إعدادات GitHub بنجاح');
+            syncWithGitHub();
+        }
+
+        async function syncWithGitHub() {
+            if (!githubConfig.repoUrl || !githubConfig.token) {
+                showToast('⚠️ يرجى حفظ إعدادات GitHub أولاً');
+                return;
+            }
+
+            if (isSyncing) return;
+            isSyncing = true;
+            updateSyncStatus('جاري التحميل...', '🔄');
+
+            try {
+                // محاولة جلب البيانات من GitHub
+                const response = await fetch(githubConfig.repoUrl, {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const content = atob(data.content);
+                    const githubData = JSON.parse(content);
+                    
+                    // مقارنة البيانات وتحديثها
+                    const localData = JSON.parse(localStorage.getItem('maryam_tower_residents') || 'null');
+                    
+                    if (JSON.stringify(githubData) !== JSON.stringify(localData)) {
+                        residents = githubData;
+                        localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+                        renderTable();
+                        updateCounters();
+                        showToast('✅ تم المزامنة مع GitHub بنجاح');
+                        updateSyncStatus('متزامن', '✅');
+                    } else {
+                        showToast('ℹ️ البيانات متطابقة مع GitHub');
+                        updateSyncStatus('متزامن', '✅');
+                    }
+                } else if (response.status === 404) {
+                    // الملف غير موجود، نقوم بإنشائه
+                    await uploadToGitHub();
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showToast('⚠️ فشل المزامنة، سيتم استخدام البيانات المحلية');
+                updateSyncStatus('غير متزامن', '⚠️');
+                
+                // تحميل البيانات المحلية
+                loadLocalData();
+            } finally {
+                isSyncing = false;
+            }
+        }
+
+        async function uploadToGitHub() {
+            if (!githubConfig.repoUrl || !githubConfig.token) return;
+
+            try {
+                const data = JSON.stringify(residents, null, 2);
+                const encodedData = btoa(unescape(encodeURIComponent(data)));
+
+                const response = await fetch(githubConfig.repoUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify({
+                        message: 'تحديث بيانات الأسانسير',
+                        content: encodedData,
+                        sha: await getFileSha()
+                    })
+                });
+
+                if (response.ok) {
+                    showToast('✅ تم رفع البيانات إلى GitHub بنجاح');
+                    updateSyncStatus('متزامن', '✅');
+                } else {
+                    throw new Error('فشل رفع البيانات');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('⚠️ فشل رفع البيانات إلى GitHub');
+            }
+        }
+
+        async function getFileSha() {
+            try {
+                const response = await fetch(githubConfig.repoUrl, {
+                    headers: {
+                        'Authorization': `token ${githubConfig.token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.sha;
+                }
+                return null;
+            } catch {
+                return null;
+            }
+        }
+
+        function updateSyncStatus(text, icon) {
+            document.getElementById('syncText').textContent = text;
+            document.getElementById('syncIcon').textContent = icon;
+        }
+
+        // ==================== دوال البيانات المحلية ====================
+        function loadLocalData() {
+            const stored = localStorage.getItem('maryam_tower_residents');
+            if (stored) {
+                try {
+                    residents = JSON.parse(stored);
+                } catch {
+                    residents = initialResidents;
+                }
+            } else {
+                residents = initialResidents;
+                localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+            }
+            renderTable();
             updateCounters();
         }
 
-        // تحديث أرقام لوحة الإحصائيات السريعة
+        function saveToLocalStorage() {
+            localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+            updateCounters();
+            
+            // محاولة المزامنة التلقائية مع GitHub
+            if (githubConfig.repoUrl && githubConfig.token) {
+                uploadToGitHub();
+            }
+        }
+
+        // ==================== دوال العرض ====================
         function updateCounters() {
             let activeFobs = 0;
             let usersElevator = 0;
@@ -210,26 +414,23 @@
             document.getElementById('usingElevatorCount').innerText = `${usersElevator} / ${residents.length}`;
         }
 
-        // بناء وعرض جدول السكان بالكامل
         function renderTable(dataToRender = residents) {
             const tbody = document.getElementById('residentsTableBody');
             tbody.innerHTML = '';
 
             dataToRender.forEach((res, index) => {
-                // إيجاد الفهرس الحقيقي للشقة في مصفوفة الحفظ الأصلية
                 const originalIndex = residents.findIndex(r => r.id === res.id);
                 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 border-b border-slate-100 transition duration-150";
 
-                // تنسيق وعرض الشفرات بطريقة ذكية
                 let fobsHtml = '';
                 if (!res.usesElevator) {
                     fobsHtml = `<span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-md italic">🔒 تم إخفاء الشفرات (لا يستخدم الأسانسير)</span>`;
                 } else if (res.fobs.length === 0) {
                     fobsHtml = `<span class="text-xs text-orange-500 font-semibold bg-orange-50 px-2 py-1 rounded">⚠️ لم تسجل شفرات بعد</span>`;
                 } else {
-                    res.fobs.forEach((fob, fIndex) => {
+                    res.fobs.forEach((fob) => {
                         fobsHtml += `
                             <span class="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-1 rounded border shadow-2xs ${fob.active ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200 line-through'} mb-1 ml-1">
                                 💳 ${fob.code}
@@ -265,11 +466,10 @@
             });
         }
 
-        // تحويل حالة استخدام الشقة للأسانسير (مستخدم / غير مستخدم)
+        // ==================== دوال التحكم ====================
         function toggleElevatorUsage(index) {
             residents[index].usesElevator = !residents[index].usesElevator;
             
-            // إذا تم تعطيل استخدام الأسانسير، نقوم بإزالة جميع الشفرات تلقائياً
             if (!residents[index].usesElevator) {
                 residents[index].fobs = [];
             }
@@ -277,30 +477,10 @@
             saveToLocalStorage();
             renderTable();
             
-            // عرض رسالة تأكيد
             const status = residents[index].usesElevator ? 'مستخدم للأسانسير' : 'غير مستخدم للأسانسير';
             showToast(`✅ تم تغيير حالة الشقة ${residents[index].id} إلى: ${status}`);
         }
 
-        // عرض رسالة منبثقة (Toast)
-        function showToast(message) {
-            // إزالة أي توست موجود
-            const existingToast = document.querySelector('.custom-toast');
-            if (existingToast) existingToast.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = 'custom-toast fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-semibold z-50 fade-in';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // وظيفة البحث الذكي وتصفية الجداول
         function filterResidents() {
             const query = document.getElementById('searchInput').value.trim().toLowerCase();
             if (!query) {
@@ -316,7 +496,6 @@
             renderTable(filtered);
         }
 
-        // حذف ساكن أو شقة بالكامل
         function deleteResident(index) {
             if(confirm(`🚨 هل أنت متأكد من رغبتك في حذف الساكن "${residents[index].name}" وشقته بالكامل نهائياً من النظام؟`)) {
                 residents.splice(index, 1);
@@ -326,7 +505,7 @@
             }
         }
 
-        // ==================== منطق نوافذ الشقق والبيانات ====================
+        // ==================== دوال مودال الشقة ====================
         function openAptModal(index = null) {
             const modal = document.getElementById('aptModal');
             document.getElementById('aptForm').reset();
@@ -366,7 +545,6 @@
             const usesElevator = document.getElementById('aptElevatorUsage').value === "true";
 
             if (index === "") {
-                // ميزة حماية: التأكد من عدم تكرار رقم الشقة
                 if(residents.some(r => r.id === id)) {
                     alert("⚠️ رقم هذه الشقة موجود مسبقاً بالنظام!");
                     return;
@@ -386,7 +564,7 @@
             closeAptModal();
         }
 
-        // ==================== منطق نوافذ التحكم بالشفرات (Fobs Management) ====================
+        // ==================== دوال مودال الشفرات ====================
         function openFobModal(index) {
             activeFobAptIndex = index;
             const res = residents[index];
@@ -447,7 +625,6 @@
             });
         }
 
-        // إضافة شفرة جديدة للشقة المحددة (عدد غير محدود)
         function addNewFob() {
             const codeInput = document.getElementById('newFobCode');
             const code = codeInput.value.trim();
@@ -457,13 +634,11 @@
                 return;
             }
 
-            // التحقق من أن الشقة تستخدم الأسانسير
             if (!residents[activeFobAptIndex].usesElevator) {
                 alert("⚠️ هذه الشقة لا تستخدم الأسانسير، يرجى تفعيل استخدام الأسانسير أولاً!");
                 return;
             }
 
-            // منع تكرار نفس كود الشفرة في العمارة لضمان التفرد والأمان
             let isDuplicate = residents.some(r => r.fobs.some(f => f.code === code));
             if(isDuplicate) {
                 alert("⚠️ كود هذه الشفرة مسجل بالفعل لشقة أخرى بالعمارة!");
@@ -478,7 +653,6 @@
             showToast(`✅ تم إضافة الشفرة ${code} بنجاح`);
         }
 
-        // تحويل حالة الشفرة بين نشطة ومتوقفة
         function toggleFobStatus(fIndex) {
             residents[activeFobAptIndex].fobs[fIndex].active = !residents[activeFobAptIndex].fobs[fIndex].active;
             saveToLocalStorage();
@@ -488,7 +662,6 @@
             showToast(`✅ تم تغيير حالة الشفرة إلى: ${status}`);
         }
 
-        // تعديل كود الشفرة الحالية
         function editFobCode(fIndex) {
             const oldCode = residents[activeFobAptIndex].fobs[fIndex].code;
             const newCode = prompt("✏️ قم بتعديل كود الشفرة المكتوب:", oldCode);
@@ -513,7 +686,6 @@
             showToast(`✅ تم تعديل الشفرة بنجاح`);
         }
 
-        // حذف شفرة معينة من الشقة
         function deleteFob(fIndex) {
             if(confirm("🚨 هل أنت متأكد من حذف هذه الشفرة نهائياً؟")) {
                 const code = residents[activeFobAptIndex].fobs[fIndex].code;
@@ -525,10 +697,41 @@
             }
         }
 
-        // تشغيل النظام وتحديث البيانات عند فتح الصفحة فوراً
+        function showToast(message) {
+            const existingToast = document.querySelector('.custom-toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-semibold z-50 fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ==================== التهيئة ====================
         window.onload = function() {
-            updateCounters();
-            renderTable();
+            // تحميل الإعدادات
+            if (githubConfig.repoUrl) {
+                document.getElementById('repoUrl').value = githubConfig.repoUrl;
+            }
+            if (githubConfig.token) {
+                document.getElementById('githubToken').value = githubConfig.token;
+            }
+
+            // تحميل البيانات
+            loadLocalData();
+            
+            // محاولة المزامنة التلقائية
+            if (githubConfig.repoUrl && githubConfig.token) {
+                setTimeout(syncWithGitHub, 1000);
+            } else {
+                updateSyncStatus('محلي فقط', '💾');
+            }
         }
     </script>
 </body>
