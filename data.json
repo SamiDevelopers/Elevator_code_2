@@ -18,7 +18,12 @@
     "position": "-",
     "name": "أ - فرج ميخائيل",
     "usesElevator": true,
-    "fobs": []
+    "fobs": [
+      {
+        "code": "0888564",
+        "active": true
+      }
+    ]
   },
   {
     "id": "101",
