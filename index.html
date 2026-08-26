@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة شفرات أسانسير برج مريم</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <header class="bg-blue-600 text-white shadow-md py-6 px-4 mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold">🏢 نظام إدارة شفرات أسانسير برج مريم</h1>
+                <p class="text-blue-100 text-sm mt-1">نظام محاسبي ذكي لإدارة شفرات السكان وحالات الاستخدام</p>
+            </div>
+            <button onclick="openAptModal()" class="bg-green-500 hover:bg-green-600 font-semibold px-5 py-2.5 rounded-lg shadow transition duration-200 flex items-center gap-2 text-sm">
+                <span>➕ إضافة شقة / ساكن جديد</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 pb-24">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="lg:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center">
+                <input type="text" id="searchInput" oninput="filterResidents()" placeholder="🔍 ابحث برقم الشقة أو اسم الساكن..." class="w-full bg-slate-50 border border-slate-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-500 font-semibold">إجمالي الشفرات النشطة</p>
+                    <p id="activeFobsCount" class="text-2xl font-bold text-green-600 mt-1">0</p>
+                </div>
+                <div class="bg-green-50 text-green-500 p-3 rounded-lg text-xl">🟢</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-slate-500 font-semibold">شقق تستخدم الأسانسير</p>
+                    <p id="usingElevatorCount" class="text-2xl font-bold text-blue-600 mt-1">0 / 0</p>
+                </div>
+                <div class="bg-blue-50 text-blue-500 p-3 rounded-lg text-xl">🛗</div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                            <th class="py-4 px-4 text-center">م</th>
+                            <th class="py-4 px-4">الدور / المكان</th>
+                            <th class="py-4 px-4">رقم الشقة</th>
+                            <th class="py-4 px-4">اسم الساكن</th>
+                            <th class="py-4 px-4 text-center">حالة الأسانسير</th>
+                            <th class="py-4 px-4">الشفرات المسجلة وحالتها</th>
+                            <th class="py-4 px-4 text-center">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="residentsTableBody" class="divide-y divide-slate-200 text-sm">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- مودال إضافة/تعديل الشقة -->
+    <div id="aptModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-lg">إضافة شقة جديدة</h3>
+                <button onclick="closeAptModal()" class="text-white/80 hover:text-white text-xl font-bold cursor-pointer">✕</button>
+            </div>
+            <form id="aptForm" onsubmit="saveAptForm(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editAptIndex">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم الشقة / المعرف *</label>
+                        <input type="text" id="aptId" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">الدور *</label>
+                        <input type="text" id="aptFloor" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">مكان الشقة</label>
+                        <input type="text" id="aptPosition" placeholder="يمين/يسار السلم" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم الساكن *</label>
+                        <input type="text" id="aptResident" required class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">استخدام الأسانسير</label>
+                    <select id="aptElevatorUsage" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="true">مستخدم أسانسير</option>
+                        <option value="false">غير مستخدم أسانسير</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeAptModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-sm transition">إلغاء</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition font-semibold">حفظ البيانات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال إدارة الشفرات -->
+    <div id="fobModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-xl mx-4 overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="bg-slate-800 text-white p-4 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-md">💳 إدارة شفرات الأسانسير</h3>
+                    <p id="fobModalSubtitle" class="text-xs text-slate-300 mt-0.5"></p>
+                </div>
+                <button onclick="closeFobModal()" class="text-white/80 hover:text-white text-xl font-bold cursor-pointer">✕</button>
+            </div>
+            <div class="p-6 space-y-6">
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h4 class="text-xs font-bold text-slate-700 mb-2">إضافة شفرة جديدة للشقة</h4>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="newFobCode" placeholder="أدخل كود الشفرة المكتوب (رقمي)..." class="flex-1 bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="addNewFob()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow transition whitespace-nowrap">➕ إضافة شفرة</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-700 mb-3 flex justify-between">
+                        <span>الشفرات الحالية المسجلة</span>
+                        <span id="fobsCountBadge" class="bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px]"></span>
+                    </h4>
+                    <div id="fobsListContainer" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. قاعدة البيانات الأولية المضمنة بالكامل حسب تزويدك للبيانات
+        const initialResidents = [
+            { id: "البواب", floor: "الأرضي", position: "-", name: "البواب", usesElevator: true, fobs: [{ code: "0013643565", active: true }] },
+            { id: "0", floor: "البدروم", position: "-", name: "أ - فرج ميخائيل", usesElevator: false, fobs: [] },
+            { id: "101", floor: "الأول", position: "يمين السلم", name: "أ - عبد المجيد سلطان", usesElevator: false, fobs: [] },
+            { id: "102", floor: "الأول", position: "يسار السلم", name: "أ - رضا وهيب", usesElevator: false, fobs: [] },
+            { id: "201", floor: "الثانى", position: "يمين السلم", name: "أ - ماجد محمد سامي", usesElevator: false, fobs: [] },
+            { id: "202", floor: "الثانى", position: "يسار السلم", name: "أ - ميلاد", usesElevator: false, fobs: [] },
+            { id: "301", floor: "الثالث", position: "يمين السلم", name: "أ- nاصر الجابري", usesElevator: true, fobs: [{ code: "0003718769", active: true }, { code: "0004241743", active: true }, { code: "0003813056", active: true }, { code: "0003896078", active: true }, { code: "0003887737", active: true }] },
+            { id: "302", floor: "الثالث", position: "يسار السلم", name: "أ / مرتضي", usesElevator: true, fobs: [{ code: "0003883215", active: true }, { code: "0013808119", active: true }] },
+            { id: "401", floor: "الرابع", position: "يمين السلم", name: "أ - فادي سمير", usesElevator: true, fobs: [{ code: "0013630411", active: true }, { code: "0013543250", active: true }, { code: "0001112644", active: true }, { code: "0000242148", active: true }, { code: "0000426301", active: true }] },
+            { id: "402", floor: "الرابع", position: "يسار السلم", name: "د. منتصر أحمد على", usesElevator: true, fobs: [{ code: "0013594203", active: true }, { code: "0013623543", active: true }, { code: "0000674223", active: true }, { code: "0001184484", active: true }, { code: "00038926669", active: true }] },
+            { id: "501", floor: "الخامس", position: "يمين السلم", name: "أ - عاطف رزق", usesElevator: true, fobs: [{ code: "0013573156", active: true }] },
+            { id: "502", floor: "الخامس", position: "يسار السلم", name: "الحاج محمد عبد المنعم", usesElevator: true, fobs: [{ code: "0013620969", active: true }, { code: "0000998632", active: true }, { code: "0000936692", active: true }, { code: "0013567037", active: true }] },
+            { id: "601", floor: "السادس", position: "يمين السلم", name: "أ - فادي راشد", usesElevator: true, fobs: [{ code: "0013629835", active: true }, { code: "0013596113", active: true }] },
+            { id: "602", floor: "السادس", position: "يسار السلم", name: "أ - محمد يوسف", usesElevator: true, fobs: [{ code: "0013634019", active: true }, { code: "0013655960", active: true }, { code: "0013592667", active: true }] },
+            { id: "701", floor: "السابع", position: "يمين السلم", name: "أ - محمد محسن", usesElevator: true, fobs: [{ code: "0000937473", active: true }, { code: "0000956467", active: true }, { code: "0004220241", active: true }, { code: "0003881684", active: true }, { code: "0013145196", active: true }, { code: "0013765574", active: true }, { code: "0003963663", active: true }] },
+            { id: "702", floor: "السابع", position: "يسار السلم", name: "أ - خالد جمال", usesElevator: true, fobs: [{ code: "0013815319", active: true }, { code: "0013795969", active: true }, { code: "0013820196", active: true }, { code: "0007069509", active: true }] },
+            { id: "801", floor: "الثامن", position: "يمين السلم", name: "أ - محمد السيد", usesElevator: true, fobs: [{ code: "0013660068", active: true }, { code: "0013587154", active: true }, { code: "0001086584", active: true }, { code: "0001081956", active: true }, { code: "0012604425", active: true }, { code: "0012558520", active: true }, { code: "0006433908", active: true }] },
+            { id: "802", floor: "الثامن", position: "يسار السلم", name: "أ - عبد المعطى", usesElevator: false, fobs: [] },
+            { id: "901", floor: "التاسع", position: "يمين السلم", name: "أ - جمعة", usesElevator: false, fobs: [] },
+            { id: "902", floor: "التاسع", position: "يسار السلم", name: "أ - سلامة ماضي", usesElevator: true, fobs: [{ code: "0000959304", active: true }, { code: "0000978230", active: true }] },
+            { id: "1001", floor: "العاشر", position: "يمين السلم", name: "أ - احمد سعيد", usesElevator: true, fobs: [{ code: "0013598142", active: true }, { code: "0013655203", active: true }, { code: "0013577035", active: true }, { code: "0000955089", active: true }] },
+            { id: "1002", floor: "العاشر", position: "يسار السلم", name: "أ - عاطف عبد العزيز", usesElevator: true, fobs: [{ code: "0013558246", active: true }, { code: "0013535294", active: true }, { code: "0003922290", active: true }] },
+            { id: "1101", floor: "الحادى عشر", position: "يمين السلم", name: "م . ماجدة حبيب", usesElevator: true, fobs: [{ code: "0013621386", active: true }] },
+            { id: "1102", floor: "الحادى عشر", position: "يسار السلم", name: "ورثة م . غادة - رانيا رمزي", usesElevator: true, fobs: [{ code: "0013658022", active: true }, { code: "0013663583", active: true }] },
+            { id: "1201", floor: "الثانى عشر", position: "يمين السلم", name: "أ - مشيل انطونيوس", usesElevator: true, fobs: [{ code: "0013647677", active: true }, { code: "0013517167", active: true }, { code: "0003878575", active: true }] },
+            { id: "1202", floor: "الثانى عشر", position: "يسار السلم", name: "أ - محمد جمال احمد", usesElevator: true, fobs: [{ code: "0013549294", active: true }, { code: "0013644461", active: true }, { code: "0000971992", active: true }] },
+            { id: "1301", floor: "الثالث عشر", position: "يمين السلم", name: "م . جورجيت حبيب", usesElevator: true, fobs: [{ code: "0000986709", active: true }, { code: "0013621358", active: true }] },
+            { id: "1302", floor: "الثالث عشر", position: "يسار السلم", name: "د. سامي عادل", usesElevator: true, fobs: [{ code: "0013519579", active: true }, { code: "001367684", active: true }] }
+        ];
+
+        // تهيئة المتغيرات الكلية وقراءة البيانات من LocalStorage
+        let residents = JSON.parse(localStorage.getItem('maryam_tower_residents')) || initialResidents;
+        let activeFobAptIndex = null;
+
+        // دالة الحفظ في التخزين المحلي للمتصفح (LocalStorage)
+        function saveToLocalStorage() {
+            localStorage.setItem('maryam_tower_residents', JSON.stringify(residents));
+            updateCounters();
+        }
+
+        // تحديث أرقام لوحة الإحصائيات السريعة
+        function updateCounters() {
+            let activeFobs = 0;
+            let usersElevator = 0;
+
+            residents.forEach(r => {
+                if(r.usesElevator) {
+                    usersElevator++;
+                    r.fobs.forEach(f => { if(f.active) activeFobs++; });
+                }
+            });
+
+            document.getElementById('activeFobsCount').innerText = activeFobs;
+            document.getElementById('usingElevatorCount').innerText = `${usersElevator} / ${residents.length}`;
+        }
+
+        // بناء وعرض جدول السكان بالكامل
+        function renderTable(dataToRender = residents) {
+            const tbody = document.getElementById('residentsTableBody');
+            tbody.innerHTML = '';
+
+            dataToRender.forEach((res, index) => {
+                // إيجاد الفهرس الحقيقي للشقة في مصفوفة الحفظ الأصلية
+                const originalIndex = residents.findIndex(r => r.id === res.id);
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 border-b border-slate-100 transition duration-150";
+
+                // تنسيق وعرض الشفرات بطريقة ذكية
+                let fobsHtml = '';
+                if (!res.usesElevator) {
+                    fobsHtml = `<span class="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-md italic">🔒 تم إخفاء الشفرات (لا يستخدم الأسانسير)</span>`;
+                } else if (res.fobs.length === 0) {
+                    fobsHtml = `<span class="text-xs text-orange-500 font-semibold bg-orange-50 px-2 py-1 rounded">⚠️ لم تسجل شفرات بعد</span>`;
+                } else {
+                    res.fobs.forEach((fob, fIndex) => {
+                        fobsHtml += `
+                            <span class="inline-flex items-center gap-1.5 text-xs font-mono px-2 py-1 rounded border shadow-2xs ${fob.active ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-600 border-red-200 line-through'} mb-1 ml-1">
+                                💳 ${fob.code}
+                                <span class="text-[9px] font-sans">${fob.active ? '(نشطة)' : '(متوقفة)'}</span>
+                            </span>
+                        `;
+                    });
+                }
+
+                tr.innerHTML = `
+                    <td class="py-4 px-4 text-center font-bold text-slate-400">${index + 1}</td>
+                    <td class="py-4 px-4">
+                        <div class="font-bold text-slate-700">${res.floor}</div>
+                        <div class="text-slate-400 text-xs">${res.position}</div>
+                    </td>
+                    <td class="py-4 px-4 font-mono font-bold text-blue-600">${res.id}</td>
+                    <td class="py-4 px-4 font-semibold text-slate-800">${res.name}</td>
+                    <td class="py-4 px-4 text-center">
+                        <button onclick="toggleElevatorUsage(${originalIndex})" class="cursor-pointer text-xs font-bold px-3 py-1.5 rounded-full transition duration-150 ${res.usesElevator ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-amber-100 text-amber-700 hover:bg-amber-200'}">
+                            ${res.usesElevator ? '🛗 مستخدم' : '❌ غير مستخدم'}
+                        </button>
+                    </td>
+                    <td class="py-4 px-4 max-w-xs sm:max-w-md">${fobsHtml}</td>
+                    <td class="py-4 px-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            ${res.usesElevator ? `<button onclick="openFobModal(${originalIndex})" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-2.5 py-1.5 rounded transition">🔑 الشفرات</button>` : ''}
+                            <button onclick="openAptModal(${originalIndex})" class="border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs px-2.5 py-1.5 rounded transition">⚙️ تعديل</button>
+                            <button onclick="deleteResident(${originalIndex})" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-2.5 py-1.5 rounded transition">🗑️ حذف</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // تحويل حالة استخدام الشقة للأسانسير (مستخدم / غير مستخدم)
+        function toggleElevatorUsage(index) {
+            residents[index].usesElevator = !residents[index].usesElevator;
+            
+            // إذا تم تعطيل استخدام الأسانسير، نقوم بإزالة جميع الشفرات تلقائياً
+            if (!residents[index].usesElevator) {
+                residents[index].fobs = [];
+            }
+            
+            saveToLocalStorage();
+            renderTable();
+            
+            // عرض رسالة تأكيد
+            const status = residents[index].usesElevator ? 'مستخدم للأسانسير' : 'غير مستخدم للأسانسير';
+            showToast(`✅ تم تغيير حالة الشقة ${residents[index].id} إلى: ${status}`);
+        }
+
+        // عرض رسالة منبثقة (Toast)
+        function showToast(message) {
+            // إزالة أي توست موجود
+            const existingToast = document.querySelector('.custom-toast');
+            if (existingToast) existingToast.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'custom-toast fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-lg shadow-lg text-sm font-semibold z-50 fade-in';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // وظيفة البحث الذكي وتصفية الجداول
+        function filterResidents() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) {
+                renderTable();
+                return;
+            }
+
+            const filtered = residents.filter(r => 
+                r.id.toLowerCase().includes(query) || 
+                r.name.toLowerCase().includes(query) ||
+                r.floor.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
+        }
+
+        // حذف ساكن أو شقة بالكامل
+        function deleteResident(index) {
+            if(confirm(`🚨 هل أنت متأكد من رغبتك في حذف الساكن "${residents[index].name}" وشقته بالكامل نهائياً من النظام؟`)) {
+                residents.splice(index, 1);
+                saveToLocalStorage();
+                renderTable();
+                showToast(`✅ تم حذف الشقة بنجاح`);
+            }
+        }
+
+        // ==================== منطق نوافذ الشقق والبيانات ====================
+        function openAptModal(index = null) {
+            const modal = document.getElementById('aptModal');
+            document.getElementById('aptForm').reset();
+            
+            if(index !== null) {
+                document.getElementById('modalTitle').innerText = "⚙️ تعديل بيانات الشقة";
+                document.getElementById('editAptIndex').value = index;
+                document.getElementById('aptId').value = residents[index].id;
+                document.getElementById('aptId').disabled = true;
+                document.getElementById('aptFloor').value = residents[index].floor;
+                document.getElementById('aptPosition').value = residents[index].position;
+                document.getElementById('aptResident').value = residents[index].name;
+                document.getElementById('aptElevatorUsage').value = residents[index].usesElevator.toString();
+            } else {
+                document.getElementById('modalTitle').innerText = "➕ إضافة شقة / ساكن جديد";
+                document.getElementById('editAptIndex').value = "";
+                document.getElementById('aptId').disabled = false;
+            }
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeAptModal() {
+            const modal = document.getElementById('aptModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function saveAptForm(e) {
+            e.preventDefault();
+            const index = document.getElementById('editAptIndex').value;
+            const id = document.getElementById('aptId').value.trim();
+            const floor = document.getElementById('aptFloor').value.trim();
+            const position = document.getElementById('aptPosition').value.trim() || "-";
+            const name = document.getElementById('aptResident').value.trim();
+            const usesElevator = document.getElementById('aptElevatorUsage').value === "true";
+
+            if (index === "") {
+                // ميزة حماية: التأكد من عدم تكرار رقم الشقة
+                if(residents.some(r => r.id === id)) {
+                    alert("⚠️ رقم هذه الشقة موجود مسبقاً بالنظام!");
+                    return;
+                }
+                residents.push({ id, floor, position, name, usesElevator, fobs: [] });
+                showToast(`✅ تم إضافة الشقة ${id} بنجاح`);
+            } else {
+                residents[index].floor = floor;
+                residents[index].position = position;
+                residents[index].name = name;
+                residents[index].usesElevator = usesElevator;
+                showToast(`✅ تم تحديث بيانات الشقة ${id} بنجاح`);
+            }
+
+            saveToLocalStorage();
+            renderTable();
+            closeAptModal();
+        }
+
+        // ==================== منطق نوافذ التحكم بالشفرات (Fobs Management) ====================
+        function openFobModal(index) {
+            activeFobAptIndex = index;
+            const res = residents[index];
+            const modal = document.getElementById('fobModal');
+            
+            document.getElementById('fobModalSubtitle').innerText = `الشقة رقم: ${res.id} - الساكن: ${res.name}`;
+            document.getElementById('newFobCode').value = '';
+            
+            renderFobsList();
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeFobModal() {
+            const modal = document.getElementById('fobModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            activeFobAptIndex = null;
+        }
+
+        function renderFobsList() {
+            const container = document.getElementById('fobsListContainer');
+            const badge = document.getElementById('fobsCountBadge');
+            const res = residents[activeFobAptIndex];
+            
+            container.innerHTML = '';
+            badge.innerText = `${res.fobs.length} شفرة`;
+
+            if(res.fobs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6 italic">لا يوجد شفرات مضافة لهذه الشقة حالياً.</p>`;
+                return;
+            }
+
+            res.fobs.forEach((fob, fIndex) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-slate-50 border p-3 rounded-lg text-sm fade-in";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <span class="font-mono font-bold text-slate-700">${fob.code}</span>
+                        <span class="text-xs ${fob.active ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50'} px-2 py-0.5 rounded font-semibold">
+                            ${fob.active ? '🟢 نشطة' : '🔴 متوقفة'}
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleFobStatus(${fIndex})" class="text-xs font-semibold px-2 py-1 bg-white border border-slate-300 hover:bg-slate-50 rounded transition">
+                            ${fob.active ? 'إيقاف' : 'تنشيط'}
+                        </button>
+                        <button onclick="editFobCode(${fIndex})" class="text-xs text-blue-600 font-semibold px-2 py-1 bg-white border border-blue-200 hover:bg-blue-50 rounded transition">
+                            تعديل
+                        </button>
+                        <button onclick="deleteFob(${fIndex})" class="text-xs text-red-600 font-semibold px-2 py-1 bg-white border border-red-200 hover:bg-red-50 rounded transition">
+                            حذف
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // إضافة شفرة جديدة للشقة المحددة (عدد غير محدود)
+        function addNewFob() {
+            const codeInput = document.getElementById('newFobCode');
+            const code = codeInput.value.trim();
+            
+            if(!code) {
+                alert("⚠️ يرجى كتابة كود الشفرة أولاً!");
+                return;
+            }
+
+            // التحقق من أن الشقة تستخدم الأسانسير
+            if (!residents[activeFobAptIndex].usesElevator) {
+                alert("⚠️ هذه الشقة لا تستخدم الأسانسير، يرجى تفعيل استخدام الأسانسير أولاً!");
+                return;
+            }
+
+            // منع تكرار نفس كود الشفرة في العمارة لضمان التفرد والأمان
+            let isDuplicate = residents.some(r => r.fobs.some(f => f.code === code));
+            if(isDuplicate) {
+                alert("⚠️ كود هذه الشفرة مسجل بالفعل لشقة أخرى بالعمارة!");
+                return;
+            }
+
+            residents[activeFobAptIndex].fobs.push({ code: code, active: true });
+            saveToLocalStorage();
+            renderFobsList();
+            renderTable();
+            codeInput.value = '';
+            showToast(`✅ تم إضافة الشفرة ${code} بنجاح`);
+        }
+
+        // تحويل حالة الشفرة بين نشطة ومتوقفة
+        function toggleFobStatus(fIndex) {
+            residents[activeFobAptIndex].fobs[fIndex].active = !residents[activeFobAptIndex].fobs[fIndex].active;
+            saveToLocalStorage();
+            renderFobsList();
+            renderTable();
+            const status = residents[activeFobAptIndex].fobs[fIndex].active ? 'نشطة' : 'متوقفة';
+            showToast(`✅ تم تغيير حالة الشفرة إلى: ${status}`);
+        }
+
+        // تعديل كود الشفرة الحالية
+        function editFobCode(fIndex) {
+            const oldCode = residents[activeFobAptIndex].fobs[fIndex].code;
+            const newCode = prompt("✏️ قم بتعديل كود الشفرة المكتوب:", oldCode);
+            
+            if(newCode === null) return;
+            
+            const cleanCode = newCode.trim();
+            if(!cleanCode) {
+                alert("⚠️ لا يمكن إدخال كود فارغ!");
+                return;
+            }
+
+            if(cleanCode !== oldCode && residents.some(r => r.fobs.some(f => f.code === cleanCode))) {
+                alert("⚠️ كود هذه الشفرة مسجل لشقة أخرى!");
+                return;
+            }
+
+            residents[activeFobAptIndex].fobs[fIndex].code = cleanCode;
+            saveToLocalStorage();
+            renderFobsList();
+            renderTable();
+            showToast(`✅ تم تعديل الشفرة بنجاح`);
+        }
+
+        // حذف شفرة معينة من الشقة
+        function deleteFob(fIndex) {
+            if(confirm("🚨 هل أنت متأكد من حذف هذه الشفرة نهائياً؟")) {
+                const code = residents[activeFobAptIndex].fobs[fIndex].code;
+                residents[activeFobAptIndex].fobs.splice(fIndex, 1);
+                saveToLocalStorage();
+                renderFobsList();
+                renderTable();
+                showToast(`✅ تم حذف الشفرة ${code} بنجاح`);
+            }
+        }
+
+        // تشغيل النظام وتحديث البيانات عند فتح الصفحة فوراً
+        window.onload = function() {
+            updateCounters();
+            renderTable();
+        }
+    </script>
+</body>
+</html>
