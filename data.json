@@ -1,1 +1,519 @@
-{}
+[
+  {
+    "id": "البواب",
+    "floor": "الأرضي",
+    "position": "-",
+    "name": "البواب",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013643565",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "0",
+    "floor": "البدروم",
+    "position": "-",
+    "name": "أ - فرج ميخائيل",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "101",
+    "floor": "الأول",
+    "position": "يمين السلم",
+    "name": "أ - عبد المجيد سلطان",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "102",
+    "floor": "الأول",
+    "position": "يسار السلم",
+    "name": "أ - رضا وهيب",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "201",
+    "floor": "الثانى",
+    "position": "يمين السلم",
+    "name": "أ - ماجد محمد سامي",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "202",
+    "floor": "الثانى",
+    "position": "يسار السلم",
+    "name": "أ - ميلاد",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "301",
+    "floor": "الثالث",
+    "position": "يمين السلم",
+    "name": "أ- nاصر الجابري",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0003718769",
+        "active": true
+      },
+      {
+        "code": "0004241743",
+        "active": true
+      },
+      {
+        "code": "0003813056",
+        "active": true
+      },
+      {
+        "code": "0003896078",
+        "active": true
+      },
+      {
+        "code": "0003887737",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "302",
+    "floor": "الثالث",
+    "position": "يسار السلم",
+    "name": "أ / مرتضي",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0003883215",
+        "active": true
+      },
+      {
+        "code": "0013808119",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "401",
+    "floor": "الرابع",
+    "position": "يمين السلم",
+    "name": "أ - فادي سمير",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013630411",
+        "active": true
+      },
+      {
+        "code": "0013543250",
+        "active": true
+      },
+      {
+        "code": "0001112644",
+        "active": true
+      },
+      {
+        "code": "0000242148",
+        "active": true
+      },
+      {
+        "code": "0000426301",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "402",
+    "floor": "الرابع",
+    "position": "يسار السلم",
+    "name": "د. منتصر أحمد على",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013594203",
+        "active": true
+      },
+      {
+        "code": "0013623543",
+        "active": true
+      },
+      {
+        "code": "0000674223",
+        "active": true
+      },
+      {
+        "code": "0001184484",
+        "active": true
+      },
+      {
+        "code": "00038926669",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "501",
+    "floor": "الخامس",
+    "position": "يمين السلم",
+    "name": "أ - عاطف رزق",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013573156",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "502",
+    "floor": "الخامس",
+    "position": "يسار السلم",
+    "name": "الحاج محمد عبد المنعم",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013620969",
+        "active": true
+      },
+      {
+        "code": "0000998632",
+        "active": true
+      },
+      {
+        "code": "0000936692",
+        "active": true
+      },
+      {
+        "code": "0013567037",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "601",
+    "floor": "السادس",
+    "position": "يمين السلم",
+    "name": "أ - فادي راشد",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013629835",
+        "active": true
+      },
+      {
+        "code": "0013596113",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "602",
+    "floor": "السادس",
+    "position": "يسار السلم",
+    "name": "أ - محمد يوسف",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013634019",
+        "active": true
+      },
+      {
+        "code": "0013655960",
+        "active": true
+      },
+      {
+        "code": "0013592667",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "701",
+    "floor": "السابع",
+    "position": "يمين السلم",
+    "name": "أ - محمد محسن",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0000937473",
+        "active": true
+      },
+      {
+        "code": "0000956467",
+        "active": true
+      },
+      {
+        "code": "0004220241",
+        "active": true
+      },
+      {
+        "code": "0003881684",
+        "active": true
+      },
+      {
+        "code": "0013145196",
+        "active": true
+      },
+      {
+        "code": "0013765574",
+        "active": true
+      },
+      {
+        "code": "0003963663",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "702",
+    "floor": "السابع",
+    "position": "يسار السلم",
+    "name": "أ - خالد جمال",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013815319",
+        "active": true
+      },
+      {
+        "code": "0013795969",
+        "active": true
+      },
+      {
+        "code": "0013820196",
+        "active": true
+      },
+      {
+        "code": "0007069509",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "801",
+    "floor": "الثامن",
+    "position": "يمين السلم",
+    "name": "أ - محمد السيد",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013660068",
+        "active": true
+      },
+      {
+        "code": "0013587154",
+        "active": true
+      },
+      {
+        "code": "0001086584",
+        "active": true
+      },
+      {
+        "code": "0001081956",
+        "active": true
+      },
+      {
+        "code": "0012604425",
+        "active": true
+      },
+      {
+        "code": "0012558520",
+        "active": true
+      },
+      {
+        "code": "0006433908",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "802",
+    "floor": "الثامن",
+    "position": "يسار السلم",
+    "name": "أ - عبد المعطى",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "901",
+    "floor": "التاسع",
+    "position": "يمين السلم",
+    "name": "أ - جمعة",
+    "usesElevator": false,
+    "fobs": []
+  },
+  {
+    "id": "902",
+    "floor": "التاسع",
+    "position": "يسار السلم",
+    "name": "أ - سلامة ماضي",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0000959304",
+        "active": true
+      },
+      {
+        "code": "0000978230",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1001",
+    "floor": "العاشر",
+    "position": "يمين السلم",
+    "name": "أ - احمد سعيد",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013598142",
+        "active": true
+      },
+      {
+        "code": "0013655203",
+        "active": true
+      },
+      {
+        "code": "0013577035",
+        "active": true
+      },
+      {
+        "code": "0000955089",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1002",
+    "floor": "العاشر",
+    "position": "يسار السلم",
+    "name": "أ - عاطف عبد العزيز",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013558246",
+        "active": true
+      },
+      {
+        "code": "0013535294",
+        "active": true
+      },
+      {
+        "code": "0003922290",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1101",
+    "floor": "الحادى عشر",
+    "position": "يمين السلم",
+    "name": "م . ماجدة حبيب",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013621386",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1102",
+    "floor": "الحادى عشر",
+    "position": "يسار السلم",
+    "name": "ورثة م . غادة - رانيا رمزي",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013658022",
+        "active": true
+      },
+      {
+        "code": "0013663583",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1201",
+    "floor": "الثانى عشر",
+    "position": "يمين السلم",
+    "name": "أ - مشيل انطونيوس",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013647677",
+        "active": true
+      },
+      {
+        "code": "0013517167",
+        "active": true
+      },
+      {
+        "code": "0003878575",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1202",
+    "floor": "الثانى عشر",
+    "position": "يسار السلم",
+    "name": "أ - محمد جمال احمد",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013549294",
+        "active": true
+      },
+      {
+        "code": "0013644461",
+        "active": true
+      },
+      {
+        "code": "0000971992",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1301",
+    "floor": "الثالث عشر",
+    "position": "يمين السلم",
+    "name": "م . جورجيت حبيب",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0000986709",
+        "active": true
+      },
+      {
+        "code": "0013621358",
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1302",
+    "floor": "الثالث عشر",
+    "position": "يسار السلم",
+    "name": "د. سامي عادل",
+    "usesElevator": true,
+    "fobs": [
+      {
+        "code": "0013519579",
+        "active": true
+      },
+      {
+        "code": "001367684",
+        "active": true
+      }
+    ]
+  }
+]
